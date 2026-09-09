@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satgas Konstitusi - Gim Edukasi Pendidikan Pancasila - Bu Oryza</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#D92D20',
+                            navy: '#0F172A',
+                            gold: '#F59E0B',
+                            teal: '#0D9488',
+                            surface: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0F172A;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 24px 24px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Card Flip 3D Animation */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Drag & Drop Visual Hints */
+        .dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+        .drag-over {
+            border-color: #3B82F6 !important;
+            background-color: rgba(59, 130, 246, 0.15) !important;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+
+        /* Pulse highlight */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .animate-pulse-subtle {
+            animation: subtlePulse 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Header / Navigation Bar -->
+    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-red-500 flex items-center justify-center shadow-lg shadow-red-900/40">
+                    <i class="fa-solid me-0 fa-shield-halved text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide text-white">SATGAS KONSTITUSI</h1>
+                    <p class="text-xs text-slate-400 font-medium">Pendidikan Pancasila &bull; Guru Mapel: <span class="text-amber-400 font-semibold">Bu Oryza</span></p>
+                </div>
+            </div>
+
+            <!-- Stats Bar (Timer, Score, Level) -->
+            <div id="stats-bar" class="hidden flex items-center gap-2 sm:gap-4 bg-slate-950/70 px-4 py-1.5 rounded-2xl border border-slate-800 text-sm">
+                <div class="flex items-center gap-1.5 text-amber-400 font-semibold">
+                    <i class="fa-solid fa-trophy text-xs"></i>
+                    <span id="score-display">0</span>
+                    <span class="text-[10px] text-slate-500 font-normal">PTS</span>
+                </div>
+                <div class="h-4 w-px bg-slate-800"></div>
+                <div class="flex items-center gap-1.5 text-sky-400 font-semibold">
+                    <i class="fa-regular fa-clock text-xs"></i>
+                    <span id="timer-display">00:00</span>
+                </div>
+                <div class="h-4 w-px bg-slate-800"></div>
+                <div class="flex items-center gap-1 text-emerald-400 font-medium">
+                    <span class="text-xs text-slate-400">Misi:</span>
+                    <span id="level-indicator" class="font-bold">1/3</span>
+                </div>
+            </div>
+
+            <!-- Sound & Help Controls -->
+            <div class="flex items-center gap-2">
+                <button id="sound-btn" onclick="toggleSound()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700" title="Suara">
+                    <i class="fa-solid fa-volume-high text-sm"></i>
+                </button>
+                <button onclick="showInstructionModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700" title="Bantuan">
+                    <i class="fa-solid fa-circle-question text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center items-center">
+
+        <!-- INTRO / WELCOME SCREEN -->
+        <section id="screen-welcome" class="w-full max-w-2xl bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl text-center backdrop-blur-xl">
+            <div class="inline-flex p-3.5 bg-red-950/50 rounded-2xl border border-red-800/50 text-red-500 mb-3 animate-pulse-subtle">
+                <i class="fa-solid fa-user-shield text-4xl sm:text-5xl"></i>
+            </div>
+            
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400 block mb-1">Gim Edukasi Pendidikan Pancasila SMP Kelas 8</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-1">Pelatihan Satgas Konstitusi</h2>
+            <p class="text-xs text-slate-400 mb-6 font-medium">Pengampu Utama: <span class="text-slate-200 font-semibold">Bu Oryza, S.Pd.</span></p>
+
+            <!-- Navigation Main Menu Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <button type="button" onclick="showLearningObjectives()" class="p-3.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 text-left transition group">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-bullseye text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-amber-400 transition">Tujuan Pembelajaran</h3>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Target kompetensi materi</p>
+                </button>
+
+                <button type="button" onclick="showInstructionModal()" class="p-3.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/50 text-left transition group">
+                    <div class="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-gamepad text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-sky-400 transition">Petunjuk Gim</h3>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Aturan & mekanisme 3 level</p>
+                </button>
+
+                <button type="button" onclick="showMaterialDeepening()" class="p-3.5 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-left transition group">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-book-bookmark text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition">Pendalaman Materi</h3>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Ringkasan UU No. 12/2011</p>
+                </button>
+            </div>
+
+            <!-- Agent Login Form -->
+            <form onsubmit="startGame(event)" class="space-y-4 text-left border-t border-slate-800/80 pt-5">
+                <div>
+                    <label for="agent-name" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Nama Agen Satgas Konstitusi</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="text" id="agent-name" required placeholder="Masukkan Nama Lengkap Anda..." 
+                            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-11 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-base shadow-lg shadow-red-900/30 hover:shadow-red-900/50 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Mulai Misi Satgas Konstitusi</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- LEVEL 1: MEMORY MATCH -->
+        <section id="screen-level-1" class="hidden w-full flex flex-col items-center">
+            <div class="w-full max-w-3xl mb-4 bg-slate-900/70 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-red-400">LEVEL 1: MEMORY MATCH</span>
+                    <h3 class="text-lg font-bold text-white">Cocokkan Aturan & Contoh Realitas</h3>
+                </div>
+                <div class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                    <span>Klik 2 kartu untuk mencocokkan pasangan hukum!</span>
+                </div>
+            </div>
+
+            <!-- Memory Card Grid (3x4) -->
+            <div id="memory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 w-full max-w-3xl">
+                <!-- Cards will be dynamically generated by JS -->
+            </div>
+        </section>
+
+        <!-- LEVEL 2: MENARA KONSTITUSI (HIERARCHY REORDERING) -->
+        <section id="screen-level-2" class="hidden w-full max-w-3xl flex flex-col items-center">
+            <div class="w-full mb-4 bg-slate-900/70 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400">LEVEL 2: MENARA KONSTITUSI</span>
+                    <h3 class="text-lg font-bold text-white">Susun Hierarki Perundang-undangan (UU No. 12/2011)</h3>
+                </div>
+                <div class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-hand-pointer text-sky-400"></i>
+                    <span>Geser (drag) atau gunakan tombol panah untuk mengurutkan dari TERTINGGI (Atas) ke TERENDAH (Bawah).</span>
+                </div>
+            </div>
+
+            <!-- Stack Container -->
+            <div class="w-full bg-slate-900/90 rounded-2xl p-4 sm:p-6 border border-slate-800 relative">
+                <div class="flex justify-between items-center mb-3 text-xs font-bold text-slate-400 uppercase tracking-wider px-2">
+                    <span class="text-red-400 flex items-center gap-1"><i class="fa-solid fa-crown"></i> 1. Tingkat Tertinggi (Puncak Konstitusi)</span>
+                    <span class="text-slate-500">7. Tingkat Daerah</span>
+                </div>
+
+                <div id="hierarchy-list" class="space-y-2.5">
+                    <!-- Draggable hierarchy blocks populated by JS -->
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="checkLevel2()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-950/40 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Verifikasi Urutan Menara</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEVEL 3: ZONA AKSI (CATEGORIZATION) -->
+        <section id="screen-level-3" class="hidden w-full max-w-4xl flex flex-col items-center">
+            <div class="w-full mb-4 bg-slate-900/70 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-teal-400">LEVEL 3: ZONA AKSI KONSTITUSI</span>
+                    <h3 class="text-lg font-bold text-white">Klasifikasikan Perilaku ke Lingkungan Sesuai</h3>
+                </div>
+                <div class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-arrows-to-dot text-emerald-400"></i>
+                    <span>Tarik atau klik kartu perilaku lalu pilih zona lokasi yang tepat!</span>
+                </div>
+            </div>
+
+            <!-- Card Stack To Classify -->
+            <div class="w-full bg-slate-900/80 p-4 rounded-2xl border border-slate-800 mb-6 flex flex-col items-center">
+                <span class="text-xs font-semibold text-slate-400 mb-3 flex items-center gap-1.5">
+                    <i class="fa-solid fa-layer-group text-slate-500"></i> Kartu Skenario Perilaku Tersisa: <span id="remaining-scenarios-count" class="text-white font-bold">0</span>
+                </span>
+                
+                <div id="scenario-deck" class="w-full max-w-md min-h-[110px] flex justify-center items-center">
+                    <!-- Current active scenario card rendered by JS -->
+                </div>
+            </div>
+
+            <!-- 3 Drop Target Zones -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <!-- Zone Rumah -->
+                <div id="zone-Rumah" ondragover="allowDrop(event)" ondragleave="clearDragHover(event)" ondrop="dropScenario(event, 'Rumah')" 
+                    class="drop-zone bg-slate-900/60 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-2xl p-4 flex flex-col transition min-h-[200px]">
+                    <div class="flex items-center gap-2 text-amber-400 font-bold border-b border-slate-800 pb-2 mb-3">
+                        <i class="fa-solid fa-house-chimney text-lg"></i>
+                        <span>Lingkungan RUMAH</span>
+                    </div>
+                    <div class="zone-cards space-y-2 flex-grow">
+                        <!-- Placed cards -->
+                    </div>
+                </div>
+
+                <!-- Zone Sekolah -->
+                <div id="zone-Sekolah" ondragover="allowDrop(event)" ondragleave="clearDragHover(event)" ondrop="dropScenario(event, 'Sekolah')" 
+                    class="drop-zone bg-slate-900/60 border-2 border-dashed border-sky-500/40 hover:border-sky-400 rounded-2xl p-4 flex flex-col transition min-h-[200px]">
+                    <div class="flex items-center gap-2 text-sky-400 font-bold border-b border-slate-800 pb-2 mb-3">
+                        <i class="fa-solid fa-school text-lg"></i>
+                        <span>Lingkungan SEKOLAH</span>
+                    </div>
+                    <div class="zone-cards space-y-2 flex-grow">
+                        <!-- Placed cards -->
+                    </div>
+                </div>
+
+                <!-- Zone Masyarakat -->
+                <div id="zone-Masyarakat" ondragover="allowDrop(event)" ondragleave="clearDragHover(event)" ondrop="dropScenario(event, 'Masyarakat')" 
+                    class="drop-zone bg-slate-900/60 border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 rounded-2xl p-4 flex flex-col transition min-h-[200px]">
+                    <div class="flex items-center gap-2 text-emerald-400 font-bold border-b border-slate-800 pb-2 mb-3">
+                        <i class="fa-solid fa-users text-lg"></i>
+                        <span>Lingkungan MASYARAKAT</span>
+                    </div>
+                    <div class="zone-cards space-y-2 flex-grow">
+                        <!-- Placed cards -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 w-full flex justify-end">
+                <button id="btn-submit-level3" onclick="checkLevel3()" disabled class="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 text-slate-500 font-bold text-sm transition cursor-not-allowed flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Selesaikan Seluruh Misi</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- FINAL CERTIFICATE & RESULTS SCREEN -->
+        <section id="screen-summary" class="hidden w-full max-w-2xl bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl text-center backdrop-blur-xl">
+            <div class="inline-flex p-4 bg-amber-500/10 rounded-full border border-amber-500/30 text-amber-400 mb-3">
+                <i class="fa-solid fa-award text-5xl"></i>
+            </div>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400 block mb-1">Misi Berhasil Diselesaikan!</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white mb-6">Sertifikat Kelulusan Satgas</h2>
+
+            <!-- Certificate Card -->
+            <div class="bg-slate-950 border-2 border-amber-500/50 rounded-2xl p-6 text-left relative overflow-hidden shadow-inner mb-6">
+                <!-- Background Emblem Watermark -->
+                <i class="fa-solid fa-shield-halved absolute -right-10 -bottom-10 text-9xl text-slate-900 opacity-40 pointer-events-none"></i>
+
+                <div class="flex justify-between items-start border-b border-slate-800 pb-4 mb-4">
+                    <div>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">REPUBLIK INDONESIA - SATGAS KONSTITUSI</p>
+                        <h4 class="text-lg font-bold text-slate-100" id="cert-agent-name">Nama Agen</h4>
+                        <p class="text-xs text-amber-400 font-medium mt-0.5">Bimbingan: Bu Oryza, S.Pd.</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-2.5 py-1 bg-red-950/80 text-red-400 border border-red-800/60 rounded-md text-[10px] font-bold uppercase">LULUS KUALIFIKASI</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4 text-xs">
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block mb-0.5">Total Skor Perolehan</span>
+                        <span id="cert-final-score" class="text-xl font-extrabold text-amber-400">0</span>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 block mb-0.5">Waktu Penyelesaian</span>
+                        <span id="cert-final-time" class="text-xl font-extrabold text-sky-400">00:00</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">Gelar Akreditasi Satgas:</span>
+                    <div id="cert-badge-title" class="inline-block bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/40 text-amber-300 font-bold text-sm px-3.5 py-1.5 rounded-lg">
+                        Satgas Konstitusi Muda
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="restartGame()" class="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Ulangi Pelatihan</span>
+                </button>
+                <button onclick="window.print()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-sm shadow-lg shadow-red-900/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak / Simpan Sertifikat</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- REFLECTION / FEEDBACK MODAL -->
+    <div id="modal-reflection" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl transform transition-all text-center">
+            <div id="modal-icon-container" class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mb-4">
+                <i id="modal-icon" class="fa-solid fa-circle-check text-2xl"></i>
+            </div>
+
+            <h3 id="modal-title" class="text-xl font-bold text-white mb-2">Evaluasi Misi</h3>
+            <p id="modal-message" class="text-sm text-slate-300 leading-relaxed mb-4"></p>
+
+            <!-- Educational Reflection Card -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left text-xs text-slate-300 mb-6 space-y-1">
+                <div class="font-bold text-amber-400 flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-graduation-cap"></i> Refleksi Konstitusi:
+                </div>
+                <p id="modal-educational-note" class="leading-normal text-slate-400"></p>
+            </div>
+
+            <button id="modal-next-btn" onclick="closeReflectionModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-sm shadow-lg transition">
+                Lanjutkan Misi Berikutnya
+            </button>
+        </div>
+    </div>
+
+    <!-- GENERAL INSTRUCTIONS MODAL -->
+    <div id="modal-instruction" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl text-left">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-sky-400"></i> Petunjuk Gim Satgas Konstitusi
+                </h3>
+                <button onclick="hideInstructionModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed mb-5 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                    <p class="font-bold text-slate-200 mb-0.5">Level 1: Memory Match</p>
+                    <p class="text-slate-400">Temukan pasangan antara nama peraturan perundang-undangan/norma dengan pasal, fungsi, atau contoh konkritnya.</p>
+                </div>
+                <div class="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                    <p class="font-bold text-slate-200 mb-0.5">Level 2: Menara Konstitusi</p>
+                    <p class="text-slate-400">Urutkan hierarki hukum Indonesia menurut <strong>UU No. 12 Tahun 2011</strong>. Tingkat teratas (UUD 1945) adalah peraturan tertinggi yang tidak boleh bertentangan dengan aturan di bawahnya.</p>
+                </div>
+                <div class="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                    <p class="font-bold text-slate-200 mb-0.5">Level 3: Zona Aksi</p>
+                    <p class="text-slate-400">Kelompokkan berbagai skenario penerapan norma hukum & kesadaran berbangsa ke dalam 3 zona: Lingkungan Rumah, Sekolah, dan Masyarakat.</p>
+                </div>
+            </div>
+
+            <button onclick="hideInstructionModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition">
+                Tutup Panduan
+            </button>
+        </div>
+    </div>
+
+    <!-- TUJUAN PEMBELAJARAN MODAL -->
+    <div id="modal-learning-objectives" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl text-left">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-amber-400"></i> Tujuan Pembelajaran
+                </h3>
+                <button onclick="hideLearningObjectives()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed mb-5 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-2.5">
+                    <p class="font-bold text-amber-400 flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-graduation-cap text-sm"></i> Target Pembelajaran (Bu Oryza):
+                    </p>
+                    <ul class="space-y-2 text-slate-300 text-xs">
+                        <li class="flex items-start gap-2 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-circle-check text-amber-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Murid dapat <strong>memahami peraturan yang ada di Indonesia</strong> beserta keterkaitannya dengan norma kehidupan sehari-hari.</span>
+                        </li>
+                        <li class="flex items-start gap-2 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-circle-check text-amber-400 text-sm mt-0.5 shrink-0"></i>
+                            <span class="leading-relaxed">Murid dapat <strong>memahami tata urutan peraturan perundang-undangan di Indonesia</strong> secara hirarkis sesuai UU No. 12 Tahun 2011.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <button onclick="hideLearningObjectives()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition">
+                Mengerti & Kembali
+            </button>
+        </div>
+    </div>
+
+    <!-- PENDALAMAN MATERI MODAL -->
+    <div id="modal-material-deepening" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl text-left">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-emerald-400"></i> Pendalaman Materi Konstitusi
+                </h3>
+                <button onclick="hideMaterialDeepening()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed mb-5 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+                    <p class="font-bold text-emerald-400">1. Hierarki UU No. 12 Tahun 2011</p>
+                    <ol class="list-decimal list-inside text-slate-300 space-y-0.5 font-medium">
+                        <li>UUD NRI Tahun 1945 (Tertinggi)</li>
+                        <li>Ketetapan MPR (TAP MPR)</li>
+                        <li>Undang-Undang / PERPU</li>
+                        <li>Peraturan Pemerintah (PP)</li>
+                        <li>Peraturan Presiden (PERPRES)</li>
+                        <li>Peraturan Daerah Provinsi (PERDA Prov)</li>
+                        <li>Peraturan Daerah Kab/Kota (PERDA Kab/Kota)</li>
+                    </ol>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+                    <p class="font-bold text-amber-400">2. Asas Utama Hukum (*Lex Superior*)</p>
+                    <p class="text-slate-400">Peraturan yang lebih rendah tidak boleh bertentangan dengan peraturan yang lebih tinggi posisinya dalam hierarki konstitusi.</p>
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+                    <p class="font-bold text-sky-400">3. Pentingnya Kesadaran Hukum</p>
+                    <p class="text-slate-400">Menaati aturan di Rumah, Sekolah, dan Masyarakat adalah wujud cinta tanah air dan penjagaan kedaulatan bangsa Indonesia.</p>
+                </div>
+            </div>
+
+            <button onclick="hideMaterialDeepening()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition">
+                Pahami & Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+        Satgas Konstitusi &copy; Media Pembelajaran Pendidikan Pancasila SMP Kelas 8 - Bu Oryza Sativa, S.Pd. - Hierarki Perundang-Undangan.
+    </footer>
+
+    <script>
+        /* SOUND SYNTHESIZER (Web Audio API) */
+        let soundEnabled = true;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.1) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) { console.log(e); }
+        }
+
+        function playSound(type) {
+            if (type === 'flip') playTone(400, 'sine', 0.08, 0.05);
+            else if (type === 'correct') {
+                playTone(523.25, 'triangle', 0.1, 0.1); // C5
+                setTimeout(() => playTone(659.25, 'triangle', 0.15, 0.1), 100); // E5
+            } else if (type === 'wrong') {
+                playTone(220, 'sawtooth', 0.15, 0.08); // A3
+                setTimeout(() => playTone(180, 'sawtooth', 0.2, 0.08), 120);
+            } else if (type === 'complete') {
+                playTone(523.25, 'sine', 0.1, 0.1);
+                setTimeout(() => playTone(659.25, 'sine', 0.1, 0.1), 100);
+                setTimeout(() => playTone(783.99, 'sine', 0.1, 0.1), 200);
+                setTimeout(() => playTone(1046.50, 'sine', 0.3, 0.12), 300);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-btn');
+            if (soundEnabled) {
+                btn.innerHTML = `<i class="fa-solid fa-volume-high text-sm"></i>`;
+                btn.classList.remove('text-red-400');
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-volume-xmark text-sm"></i>`;
+                btn.classList.add('text-red-400');
+            }
+        }
+
+        /* GAME STATE VARIABLES */
+        let agentName = "Agen Satgas";
+        let currentLevel = 1;
+        let score = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        // Level 1 Cards Data (6 Pairs = 12 Cards)
+        const memoryPairsData = [
+            {
+                id: 1,
+                title: "UUD NRI 1945 Art. 31",
+                content: "Hak setiap warga negara mendapatkan pendidikan & kewajiban pemerintah membiayainya."
+            },
+            {
+                id: 2,
+                title: "UU No. 22 Tahun 2009",
+                content: "Aturan Lalu Lintas: Wajib memakai helm standar SNI dan memiliki SIM saat berkendara."
+            },
+            {
+                id: 3,
+                title: "Tata Tertib Sekolah",
+                content: "Kewajiban hadir sebelum jam 07.00 & mengenakan seragam rapi sesuai jadwal."
+            },
+            {
+                id: 4,
+                title: "Norma Kesopanan",
+                content: "Menyapa guru dengan ramah & menggunakan bahasa yang santun saat berbicara."
+            },
+            {
+                id: 5,
+                title: "Perda Perparkiran",
+                content: "Larangan memarkir kendaraan secara sembarangan di atas fasilitas trotoar umum."
+            },
+            {
+                id: 6,
+                title: "Aturan dalam Rumah",
+                content: "Membantu merapikan tempat tidur dan meminta izin orang tua sebelum bepergian."
+            }
+        ];
+
+        // Level 2 Hierarchy Data (UU No. 12 Tahun 2011)
+        const correctHierarchyOrder = [
+            { id: 'uud', name: 'UUD NRI Tahun 1945', desc: 'Hukum dasar tertulis tertinggi di Indonesia', icon: 'fa-landmark-flag' },
+            { id: 'tap_mpr', name: 'Ketetapan MPR (Tap MPR)', desc: 'Putusan Majelis Permusyawaratan Rakyat', icon: 'fa-gavel' },
+            { id: 'uu_perpu', name: 'UU / Perpu', desc: 'Undang-Undang / Peraturan Pemerintah Pengganti UU', icon: 'fa-scale-balanced' },
+            { id: 'pp', name: 'Peraturan Pemerintah (PP)', desc: 'Aturan pelaksanaan Undang-Undang oleh Presiden', icon: 'fa-building-columns' },
+            { id: 'perpres', name: 'Peraturan Presiden (Perpres)', desc: 'Peraturan yang ditetapkan oleh Presiden', icon: 'fa-user-tie' },
+            { id: 'perda_prov', name: 'Perda Provinsi', desc: 'Dibuat DPRD Provinsi bersama Gubernur', icon: 'fa-map-location-dot' },
+            { id: 'perda_kab', name: 'Perda Kabupaten/Kota', desc: 'Dibuat DPRD Kab/Kota bersama Bupati/Walikota', icon: 'fa-city' }
+        ];
+
+        let currentHierarchyList = [];
+
+        // Level 3 Scenarios Data
+        const scenariosData = [
+            { id: 1, text: "Mematikan lampu dan kran air setelah selesai digunakan di rumah.", category: "Rumah" },
+            { id: 2, text: "Membuang sampah makanan di tempat sampah halaman sekolah.", category: "Sekolah" },
+            { id: 3, text: "Mengikuti kegiatan gotong royong membersihkan selokan warga RT/RW.", category: "Masyarakat" },
+            { id: 4, text: "Menghormati dan mematuhi nasehat orang tua saat di rumah.", category: "Rumah" },
+            { id: 5, text: "Mendengarkan dengan tertib saat guru menjelaskan pelajaran.", category: "Sekolah" },
+            { id: 6, text: "Menjaga ketenangan dan tidak bising saat tetangga sedang beribadah.", category: "Masyarakat" },
+            { id: 7, text: "Melaksanakan tugas piket kebersihan kelas bersama kelompoknya.", category: "Sekolah" },
+            { id: 8, text: "Menjaga toleransi dan menyapa tetangga di lingkungan sekitar.", category: "Masyarakat" }
+        ];
+
+        let activeScenarioIndex = 0;
+        let level3UserSelections = {};
+
+        /* GAME CONTROLLER FUNCTIONS */
+        function startGame(e) {
+            e.preventDefault();
+            const input = document.getElementById('agent-name');
+            agentName = input.value.trim() || "Agen Satgas";
+
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('stats-bar').classList.remove('hidden');
+
+            score = 0;
+            timerSeconds = 0;
+            updateScoreDisplay();
+            startTimer();
+
+            loadLevel(1);
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+                const secs = (timerSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = score;
+        }
+
+        function addScore(points) {
+            score += points;
+            updateScoreDisplay();
+        }
+
+        function loadLevel(levelNum) {
+            currentLevel = levelNum;
+            document.getElementById('level-indicator').innerText = `${levelNum}/3`;
+
+            document.getElementById('screen-level-1').classList.add('hidden');
+            document.getElementById('screen-level-2').classList.add('hidden');
+            document.getElementById('screen-level-3').classList.add('hidden');
+
+            if (levelNum === 1) {
+                document.getElementById('screen-level-1').classList.remove('hidden');
+                initLevel1();
+            } else if (levelNum === 2) {
+                document.getElementById('screen-level-2').classList.remove('hidden');
+                initLevel2();
+            } else if (levelNum === 3) {
+                document.getElementById('screen-level-3').classList.remove('hidden');
+                initLevel3();
+            }
+        }
+
+        /* LEVEL 1 LOGIC: MEMORY MATCH */
+        let flippedCards = [];
+        let matchedPairsCount = 0;
+
+        function initLevel1() {
+            matchedPairsCount = 0;
+            flippedCards = [];
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+
+            // Build 12 cards (6 Title cards + 6 Content cards)
+            let cardDeck = [];
+            memoryPairsData.forEach(pair => {
+                cardDeck.push({ pairId: pair.id, text: pair.title, type: 'title' });
+                cardDeck.push({ pairId: pair.id, text: pair.content, type: 'content' });
+            });
+
+            // Shuffle Deck
+            cardDeck.sort(() => Math.random() - 0.5);
+
+            // Render Cards
+            cardDeck.forEach((card, idx) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card-item h-32 perspective-1000 cursor-pointer';
+                cardEl.setAttribute('data-pair-id', card.pairId);
+                cardEl.setAttribute('data-index', idx);
+
+                cardEl.innerHTML = `
+                    <div class="card-inner relative w-full h-full transform-style-3d transition-transform duration-500 rounded-2xl shadow-lg">
+                        <!-- Front Face (Hidden initially) -->
+                        <div class="card-front absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 rounded-2xl flex flex-col items-center justify-center p-3 backface-hidden text-center hover:border-red-500/60 transition">
+                            <i class="fa-solid fa-shield-halved text-2xl text-red-500 mb-1 opacity-70"></i>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">SATGAS</span>
+                        </div>
+                        <!-- Back Face (Revealed on flip) -->
+                        <div class="card-back absolute inset-0 ${card.type === 'title' ? 'bg-gradient-to-br from-red-950/90 to-slate-900 border-2 border-red-500/80' : 'bg-gradient-to-br from-slate-900 to-blue-950/90 border-2 border-sky-500/80'} rounded-2xl flex flex-col items-center justify-center p-3 backface-hidden rotate-y-180 text-center">
+                            <span class="text-[9px] uppercase font-bold ${card.type === 'title' ? 'text-red-400' : 'text-sky-400'} mb-1">${card.type === 'title' ? 'Regulasi / Aturan' : 'Penerapan / Contoh'}</span>
+                            <p class="text-xs font-bold text-slate-100 leading-snug line-clamp-4">${card.text}</p>
+                        </div>
+                    </div>
+                `;
+
+                cardEl.addEventListener('click', () => handleCardClick(cardEl));
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function handleCardClick(cardEl) {
+            const inner = cardEl.querySelector('.card-inner');
+
+            // Prevent flipping if already flipped or 2 cards currently undergoing check
+            if (inner.classList.contains('rotate-y-180') || flippedCards.length >= 2) return;
+
+            playSound('flip');
+            inner.classList.add('rotate-y-180');
+            flippedCards.push(cardEl);
+
+            if (flippedCards.length === 2) {
+                const card1 = flippedCards[0];
+                const card2 = flippedCards[1];
+                const pair1 = card1.getAttribute('data-pair-id');
+                const pair2 = card2.getAttribute('data-pair-id');
+
+                if (pair1 === pair2) {
+                    // Match Found!
+                    playSound('correct');
+                    addScore(100);
+                    matchedPairsCount++;
+                    flippedCards = [];
+
+                    // Highlight success style
+                    card1.querySelector('.card-back').classList.add('ring-2', 'ring-emerald-400');
+                    card2.querySelector('.card-back').classList.add('ring-2', 'ring-emerald-400');
+
+                    if (matchedPairsCount === memoryPairsData.length) {
+                        setTimeout(() => {
+                            playSound('complete');
+                            showReflectionModal({
+                                title: "Misi Level 1 Selesai!",
+                                message: "Luar biasa! Kamu berhasil memasangkan seluruh hukum & norma dengan penerapannya secara cermat.",
+                                note: "Sila dan konstitusi bukan sekadar hafalan teks, melainkan pedoman berperilaku konkrit dalam kehidupan pribadi, bersekolah, dan bermasyarakat.",
+                                nextLevel: 2
+                            });
+                        }, 600);
+                    }
+                } else {
+                    // Not Match
+                    playSound('wrong');
+                    setTimeout(() => {
+                        card1.querySelector('.card-inner').classList.remove('rotate-y-180');
+                        card2.querySelector('.card-inner').classList.remove('rotate-y-180');
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        /* LEVEL 2 LOGIC: MENARA KONSTITUSI */
+        let draggedIndex = null;
+
+        function initLevel2() {
+            // Shuffle initial hierarchy order
+            currentHierarchyList = [...correctHierarchyOrder].sort(() => Math.random() - 0.5);
+            renderHierarchyList();
+        }
+
+        function renderHierarchyList() {
+            const container = document.getElementById('hierarchy-list');
+            container.innerHTML = '';
+
+            currentHierarchyList.forEach((item, idx) => {
+                const block = document.createElement('div');
+                block.className = 'draggable-block bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between cursor-grab active:cursor-grabbing transition hover:border-slate-700 shadow-md';
+                block.draggable = true;
+                block.setAttribute('data-index', idx);
+
+                block.innerHTML = `
+                    <div class="flex items-center gap-3 pointer-events-none">
+                        <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 flex items-center justify-center font-bold text-xs">
+                            ${idx + 1}
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-red-950/40 border border-red-900/40 text-red-400 flex items-center justify-center">
+                            <i class="fa-solid ${item.icon} text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm text-slate-100">${item.name}</p>
+                            <p class="text-[11px] text-slate-400">${item.desc}</p>
+                        </div>
+                    </div>
+                    <!-- Touch/Mouse Arrow Control Helpers for Mobile -->
+                    <div class="flex items-center gap-1">
+                        <button onclick="moveHierarchyItem(${idx}, -1)" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 text-xs" title="Naik">
+                            <i class="fa-solid fa-chevron-up"></i>
+                        </button>
+                        <button onclick="moveHierarchyItem(${idx}, 1)" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 text-xs" title="Turun">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+                `;
+
+                // Drag Events
+                block.addEventListener('dragstart', (e) => {
+                    draggedIndex = idx;
+                    block.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                block.addEventListener('dragend', () => {
+                    block.classList.remove('dragging');
+                    draggedIndex = null;
+                });
+
+                block.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    block.classList.add('drag-over');
+                });
+
+                block.addEventListener('dragleave', () => {
+                    block.classList.remove('drag-over');
+                });
+
+                block.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    block.classList.remove('drag-over');
+                    if (draggedIndex !== null && draggedIndex !== idx) {
+                        const movedItem = currentHierarchyList.splice(draggedIndex, 1)[0];
+                        currentHierarchyList.splice(idx, 0, movedItem);
+                        playSound('flip');
+                        renderHierarchyList();
+                    }
+                });
+
+                container.appendChild(block);
+            });
+        }
+
+        function moveHierarchyItem(fromIndex, direction) {
+            const toIndex = fromIndex + direction;
+            if (toIndex < 0 || toIndex >= currentHierarchyList.length) return;
+            
+            const item = currentHierarchyList.splice(fromIndex, 1)[0];
+            currentHierarchyList.splice(toIndex, 0, item);
+            playSound('flip');
+            renderHierarchyList();
+        }
+
+        function checkLevel2() {
+            let isCorrect = true;
+            for (let i = 0; i < correctHierarchyOrder.length; i++) {
+                if (currentHierarchyList[i].id !== correctHierarchyOrder[i].id) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                playSound('complete');
+                addScore(250);
+                showReflectionModal({
+                    title: "Menara Konstitusi Kokoh!",
+                    message: "Sempurna! Kamu berhasil menyusun urutan perundang-undangan Indonesia (UU No. 12 Tahun 2011) dengan tepat.",
+                    note: "Landasan Hukum Tertinggi adalah UUD NRI 1945. Semua peraturan di bawahnya (seperti Peraturan Presiden atau Perda) TIDAK BOLEH bertentangan dengan hukum yang ada di atasnya.",
+                    nextLevel: 3
+                });
+            } else {
+                playSound('wrong');
+                showReflectionModal({
+                    title: "Urutan Masih Belum Tepat",
+                    message: "Terdapat posisi aturan perundang-undangan yang tertukar.",
+                    note: "Ingat prinsip Lex Superior Derogat Legi Inferiori: UUD 1945 berada di puncak, diikuti Tap MPR, UU/Perpu, PP, Perpres, Perda Prov, dan Perda Kab/Kota di dasar.",
+                    retry: true
+                });
+            }
+        }
+
+        /* LEVEL 3 LOGIC: ZONA AKSI */
+        function initLevel3() {
+            activeScenarioIndex = 0;
+            level3UserSelections = {};
+
+            // Clear drop zones
+            ['Rumah', 'Sekolah', 'Masyarakat'].forEach(zone => {
+                document.getElementById(`zone-${zone}`).querySelector('.zone-cards').innerHTML = '';
+            });
+
+            renderCurrentScenarioCard();
+            updateScenarioCounter();
+        }
+
+        function updateScenarioCounter() {
+            const remaining = scenariosData.length - activeScenarioIndex;
+            document.getElementById('remaining-scenarios-count').innerText = Math.max(0, remaining);
+
+            const submitBtn = document.getElementById('btn-submit-level3');
+            if (remaining === 0) {
+                submitBtn.disabled = false;
+                submitBtn.className = "w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-950/40 transition flex items-center justify-center gap-2 cursor-pointer animate-pulse-subtle";
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.className = "w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 text-slate-500 font-bold text-sm transition cursor-not-allowed flex items-center justify-center gap-2";
+            }
+        }
+
+        function renderCurrentScenarioCard() {
+            const deck = document.getElementById('scenario-deck');
+            deck.innerHTML = '';
+
+            if (activeScenarioIndex >= scenariosData.length) {
+                deck.innerHTML = `
+                    <div class="text-center p-4 text-emerald-400 font-semibold text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-lg"></i>
+                        <span>Seluruh kartu skenario telah ditempatkan! Klik 'Selesaikan Seluruh Misi' di bawah.</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const item = scenariosData[activeScenarioIndex];
+            const card = document.createElement('div');
+            card.className = "w-full bg-gradient-to-r from-slate-950 to-slate-900 border-2 border-slate-700 rounded-2xl p-4 cursor-grab shadow-xl flex flex-col justify-between gap-3 transform hover:-translate-y-0.5 transition";
+            card.draggable = true;
+            card.id = `scenario-card-${item.id}`;
+
+            card.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <span class="p-2 rounded-lg bg-red-950/60 border border-red-800/60 text-red-400 text-xs font-bold">#${activeScenarioIndex + 1}</span>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-100 leading-relaxed">${item.text}</p>
+                </div>
+                <div class="flex items-center justify-between border-t border-slate-800/80 pt-2.5">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase"><i class="fa-solid fa-hand-pointer"></i> Tarik / Klik Kategori Target:</span>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="quickAssignScenario('Rumah')" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[11px] font-bold transition">Rumah</button>
+                        <button onclick="quickAssignScenario('Sekolah')" class="px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-bold transition">Sekolah</button>
+                        <button onclick="quickAssignScenario('Masyarakat')" class="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold transition">Masyarakat</button>
+                    </div>
+                </div>
+            `;
+
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', item.id);
+            });
+
+            deck.appendChild(card);
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function clearDragHover(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function dropScenario(e, targetZone) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            const cardId = e.dataTransfer.getData('text/plain');
+            if (cardId) {
+                quickAssignScenario(targetZone);
+            }
+        }
+
+        function quickAssignScenario(targetZone) {
+            if (activeScenarioIndex >= scenariosData.length) return;
+
+            const item = scenariosData[activeScenarioIndex];
+            level3UserSelections[item.id] = targetZone;
+
+            // Render placed mini card in target zone
+            const zoneContainer = document.getElementById(`zone-${targetZone}`).querySelector('.zone-cards');
+            const miniCard = document.createElement('div');
+            miniCard.className = "bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 flex items-center justify-between gap-2 shadow-sm animate-fade-in";
+            miniCard.innerHTML = `
+                <span class="line-clamp-2 leading-tight">${item.text}</span>
+                <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+            `;
+            zoneContainer.appendChild(miniCard);
+
+            playSound('flip');
+            activeScenarioIndex++;
+            renderCurrentScenarioCard();
+            updateScenarioCounter();
+        }
+
+        function checkLevel3() {
+            let correctCount = 0;
+            scenariosData.forEach(item => {
+                if (level3UserSelections[item.id] === item.category) {
+                    correctCount++;
+                }
+            });
+
+            const pointsAwarded = correctCount * 30;
+            addScore(pointsAwarded);
+
+            clearInterval(timerInterval);
+            playSound('complete');
+
+            showFinalCertificate();
+        }
+
+        function showFinalCertificate() {
+            // Hide Level 3 screen and display summary certificate screen
+            document.getElementById('screen-level-3').classList.add('hidden');
+            document.getElementById('screen-summary').classList.remove('hidden');
+
+            // Populate certificate details
+            document.getElementById('cert-agent-name').innerText = agentName;
+            document.getElementById('cert-final-score').innerText = score;
+
+            // Format final time elapsed
+            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('cert-final-time').innerText = `${mins}:${secs}`;
+
+            // Assign title rank based on score performance
+            const badgeTitle = document.getElementById('cert-badge-title');
+            if (score >= 800) {
+                badgeTitle.innerText = "Satgas Konstitusi Utama";
+            } else if (score >= 500) {
+                badgeTitle.innerText = "Satgas Konstitusi Madya";
+            } else {
+                badgeTitle.innerText = "Satgas Konstitusi Muda";
+            }
+        }
+
+        /* MODALS & GAME TRANSITIONS */
+        function showReflectionModal(config) {
+            const modal = document.getElementById('modal-reflection');
+            document.getElementById('modal-title').innerText = config.title;
+            document.getElementById('modal-message').innerText = config.message;
+            document.getElementById('modal-educational-note').innerText = config.note;
+
+            const nextBtn = document.getElementById('modal-next-btn');
+
+            if (config.retry) {
+                nextBtn.innerText = "Coba Lagi Level Ini";
+                nextBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                };
+            } else {
+                nextBtn.innerText = `Lanjut ke Level ${config.nextLevel}`;
+                nextBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    loadLevel(config.nextLevel);
+                };
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeReflectionModal() {
+            document.getElementById('modal-reflection').classList.add('hidden');
+        }
+
+        function showInstructionModal() {
+            document.getElementById('modal-instruction').classList.remove('hidden');
+        }
+
+        function hideInstructionModal() {
+            document.getElementById('modal-instruction').classList.add('hidden');
+        }
+
+        /* NEW MODAL HANDLERS FOR MAIN MENU */
+        function showLearningObjectives() {
+            document.getElementById('modal-learning-objectives').classList.remove('hidden');
+        }
+
+        function hideLearningObjectives() {
+            document.getElementById('modal-learning-objectives').classList.add('hidden');
+        }
+
+        function showMaterialDeepening() {
+            document.getElementById('modal-material-deepening').classList.remove('hidden');
+        }
+
+        function hideMaterialDeepening() {
+            document.getElementById('modal-material-deepening').classList.add('hidden');
+        }
+
+        function restartGame() {
+            document.getElementById('screen-summary').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            document.getElementById('stats-bar').classList.add('hidden');
+            clearInterval(timerInterval);
+        }
+    </script>
+</body>
+</html>
